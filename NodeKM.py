@@ -34,18 +34,13 @@ while True:
     client, address = server.accept()
     print(str(address) + "connected.")
     data = client.recv(10).decode()
-    encryptedkey = ""
+    encryptedkey = b'nothing'
 
     if data == "ECB":
         encryptedkey = AESencrypt(key1, key3)
 
-
     elif data == "CFB":
         encryptedkey = AESencrypt(key2, key3)
-
-    else:
-        client.close()
-        continue
 
     client.send(encryptedkey)
     client.close()
