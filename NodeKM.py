@@ -7,9 +7,9 @@ PORT = 4343
 PADDING = '_'
 BLOCK_SIZE = 16
 
-key1 = "1"
-key2 = "2"
-key3 = "3"
+KEY1 = "1"
+KEY2 = "2"
+KEY3 = "3"
 
 
 def pad(x):
@@ -34,13 +34,13 @@ while True:
     client, address = server.accept()
     print(str(address) + "connected.")
     data = client.recv(10).decode()
-    encryptedkey = b'nothing'
+    encryptedkey = b'NA'
 
     if data == "ECB":
-        encryptedkey = AESencrypt(key1, key3)
+        encryptedkey = AESencrypt(KEY1, KEY3)
 
     elif data == "CFB":
-        encryptedkey = AESencrypt(key2, key3)
+        encryptedkey = AESencrypt(KEY2, KEY3)
 
     client.send(encryptedkey)
     client.close()
