@@ -12,12 +12,20 @@ B_PORT = 4344
 FILE_PATH = './outputfile'
 
 KEY3 = '3'
+IV = '1234567890123456'
 
 
 def pad(x):
     if len(x) % BLOCK_SIZE != 0:
         return x + (BLOCK_SIZE - len(x) % BLOCK_SIZE) * PADDING
     return x
+
+
+def byte_xor(byte_array1, byte_array2):
+    result = bytearray()
+    for byte1, byte2 in zip(byte_array1, byte_array2):
+        result.append(ord(byte1) ^ ord(byte2))
+    return bytes(result)
 
 
 def AESencrypt(plaintext, key):
@@ -63,7 +71,14 @@ with open(FILE_PATH, "wb+") as f:
             encrypted_block = client.recv(BLOCK_SIZE)
 
     if MODE == 'CFB':
-        pass
+        previous_encrypted_block = IV
+        encrypted_block = client.recv(BLOCK_SIZE)
+        while len(encrypted_block) != 0:
+            cipher_block = AESencrypt(previous_encrypted_block, key)
+            decrypted_block = byte_xor(cipher_block, encrypted_block)
+            f.write(decrypted_block)
+            previous_encrypted_block = encrypted_block
+            encrypted_block = client.recv(BLOCK_SIZE)
 
 server.close()
 
