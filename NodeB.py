@@ -4,7 +4,6 @@ from Crypto.Cipher import AES
 
 PADDING = '_'
 BLOCK_SIZE = 16
-MODE = ''
 KM_ADDRESS = '127.0.0.1'
 B_ADDRESS = '127.0.0.1'
 KM_PORT = 4343
@@ -24,7 +23,7 @@ def pad(x):
 def byte_xor(byte_array1, byte_array2):
     result = bytearray()
     for byte1, byte2 in zip(byte_array1, byte_array2):
-        result.append(ord(byte1) ^ ord(byte2))
+        result.append(byte1 ^ byte2)
     return bytes(result)
 
 
@@ -50,7 +49,8 @@ server.listen(1)
 
 # wait for mode message from node A
 client, address = server.accept()
-MODE = bytes.decode(client.recv(3))
+MODE = client.recv(3)
+
 
 conn_to_km = socket.socket()
 conn_to_km.connect((KM_ADDRESS, KM_PORT))
@@ -63,14 +63,14 @@ key = AESdecrypt(encrypted_key, KEY3)
 
 with open(FILE_PATH, "wb+") as f:
     client.send(b'READY')
-    if MODE == 'ECB':
+    if MODE == b'ECB':
         encrypted_block = client.recv(BLOCK_SIZE)
         while len(encrypted_block) != 0:
             decrypted_block = AESdecrypt(encrypted_block, key)
             f.write(decrypted_block)
             encrypted_block = client.recv(BLOCK_SIZE)
 
-    if MODE == 'CFB':
+    if MODE == b'CFB':
         previous_encrypted_block = IV
         encrypted_block = client.recv(BLOCK_SIZE)
         while len(encrypted_block) != 0:

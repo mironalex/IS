@@ -24,7 +24,7 @@ def pad(x):
 def byte_xor(byte_array1, byte_array2):
     result = bytearray()
     for byte1, byte2 in zip(byte_array1, byte_array2):
-        result.append(ord(byte1) ^ ord(byte2))
+        result.append(byte1 ^ byte2)
     return bytes(result)
 
 
@@ -67,14 +67,14 @@ if __name__ == "__main__":
     if ready_message == b'READY':
         # start sending file
         with open(FILE_PATH, "rb+") as f:
-            if MODE == 'ECB':
+            if MODE == b'ECB':
                 block = f.read(BLOCK_SIZE)
                 while len(block) != 0:
                     encrypted_block = AESencrypt(block, key)
                     conn_to_b.send(encrypted_block)
                     block = f.read(BLOCK_SIZE)
 
-            elif MODE == 'CFB':
+            elif MODE == b'CFB':
                 block = f.read(BLOCK_SIZE)
                 previous_encrypted_block = IV
                 while len(block) != 0:
