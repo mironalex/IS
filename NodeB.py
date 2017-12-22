@@ -2,7 +2,7 @@ import socket
 from Crypto.Cipher import AES
 
 
-PADDING = '_'
+PADDING = chr(0)
 BLOCK_SIZE = 16
 KM_ADDRESS = '127.0.0.1'
 B_ADDRESS = '127.0.0.1'
@@ -16,7 +16,16 @@ IV = '1234567890123456'
 
 def pad(x):
     if len(x) % BLOCK_SIZE != 0:
-        return x + (BLOCK_SIZE - len(x) % BLOCK_SIZE) * PADDING
+        if isinstance(x, (bytes, bytearray)):
+            x = x.decode()
+        return x + ((BLOCK_SIZE - len(x) % BLOCK_SIZE) - 1) * PADDING + (chr(BLOCK_SIZE - len(x) % BLOCK_SIZE))
+    return x
+
+
+def unpad(x):
+    if x[-1] < 16:
+        padding_length = x[-1]
+        x = x[:-padding_length]
     return x
 
 
@@ -67,6 +76,7 @@ with open(FILE_PATH, "wb+") as f:
         encrypted_block = client.recv(BLOCK_SIZE)
         while len(encrypted_block) != 0:
             decrypted_block = AESdecrypt(encrypted_block, key)
+            decrypted_block = unpad(decrypted_block)
             f.write(decrypted_block)
             encrypted_block = client.recv(BLOCK_SIZE)
 

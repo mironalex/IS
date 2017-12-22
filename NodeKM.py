@@ -1,10 +1,9 @@
 import socket
 from Crypto.Cipher import AES
-from Crypto import Random
 
 
 PORT = 4343
-PADDING = '_'
+PADDING = chr(0)
 BLOCK_SIZE = 16
 
 KEY1 = "1"
@@ -13,7 +12,11 @@ KEY3 = "3"
 
 
 def pad(x):
-    return x + (BLOCK_SIZE - len(x) % BLOCK_SIZE) * PADDING
+    if len(x) % BLOCK_SIZE != 0:
+        if isinstance(x, (bytes, bytearray)):
+            x = x.decode()
+        return x + ((BLOCK_SIZE - len(x) % BLOCK_SIZE) - 1) * PADDING + (chr(BLOCK_SIZE - len(x) % BLOCK_SIZE))
+    return x
 
 
 def AESencrypt(plaintext, key):

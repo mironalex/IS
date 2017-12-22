@@ -2,7 +2,7 @@ import socket
 from Crypto.Cipher import AES
 
 
-PADDING = '_'
+PADDING = chr(0)
 BLOCK_SIZE = 16
 MODE = 'CFB'.encode('utf-8')
 KM_ADDRESS = '127.0.0.1'
@@ -17,7 +17,9 @@ IV = '1234567890123456'
 
 def pad(x):
     if len(x) % BLOCK_SIZE != 0:
-        return x + (BLOCK_SIZE - len(x) % BLOCK_SIZE) * PADDING
+        if isinstance(x, (bytes, bytearray)):
+            x = x.decode()
+        return x + ((BLOCK_SIZE - len(x) % BLOCK_SIZE) - 1) * PADDING + (chr(BLOCK_SIZE - len(x) % BLOCK_SIZE))
     return x
 
 
