@@ -1,7 +1,7 @@
 import socket
 from Crypto.Cipher import AES
 
-
+KM_ADDRESS = '127.0.0.1'
 PORT = 4343
 PADDING = chr(0)
 BLOCK_SIZE = 16
@@ -29,7 +29,7 @@ def AESencrypt(plaintext, key):
 
 # start server
 server = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-server.bind(('127.0.0.1', PORT))
+server.bind((KM_ADDRESS, PORT))
 server.listen(1)
 print("Server is running.")
 
